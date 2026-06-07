@@ -49,6 +49,9 @@ const Manager = () => {
   }
 
   const editPassword = (id) => {
+    //okay
+    const newPassword
+
     
   }
 

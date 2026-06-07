@@ -66,7 +66,7 @@ const Manager = () => {
 
 
   return (
-    <div className='h-[80vh] flex justify-center items-center bg-white'>
+    <div className='h-[80vh] flex justify-center items-center'>
       <div className="container w-[75vw] rounded-3xl p-5 bg-blue-200 flex flex-col ">
 
         <div className="logo text-2xl font-bold text-center ">

@@ -10,7 +10,7 @@ export const Navbar = () => {
             </div>
             <button className='flex items-center gap-2 bg-green-500  hover:bg-green-600 rounded-3xl px-3 py-1 text-sm font-medium'>
                 <img className='invert  w-10 p-1' src="/icons/github.svg" alt="github logo" />
-                <span className='font-bold'>GitHub</span>
+                <span className='font-bold'><a href="https://github.com/Harshal006-rgb" target='blank'>GitHub</a></span>
             </button>
         </div>
     </div>

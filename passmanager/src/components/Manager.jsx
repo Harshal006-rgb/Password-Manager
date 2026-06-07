@@ -1,15 +1,22 @@
-import React, { useEffect } from 'react'
-import { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react'
+import { v4 as uuidv4 } from "uuid";
 
 const Manager = () => {
-  const [form, setForm] = useState({site: "", username: "", password: ""});
+  const [form, setForm] = useState({ site: "", username: "", password: "" });
   const [passwordArray, setPasswordArray] = useState([]);
   const ref = useRef();
 
   useEffect(() => {
-    
-    
+    let passwords = localStorage.getItem("passwords");
+    if (passwords) {
+      setPasswordArray(JSON.parse(passwords));
+    }
+    else {
+      setPasswordArray([]);
+    }
+
   }, [])
+
 
   const showPassword = () => {
     if (ref.current.src.includes("icons/eye.png")) {
@@ -23,28 +30,42 @@ const Manager = () => {
   }
 
   const handleChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value})
-    
-    
+    setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   const savePassword = () => {
-    console.log(form);
     // add password to local storage
-    let passwords = localStorage.getItem("passwords");
-    if(passwords)
+    setPasswordArray([...passwordArray, { ...form, id: uuidv4() }]);
+    localStorage.setItem("passwords", JSON.stringify([...passwordArray, { ...form, id: uuidv4() }]));
+    setForm({ site: "", username: "", password: "" });
+    console.log([...passwordArray,form]);
     
-
   }
 
+  const deletePassword = (id) => {
+    const newPassword = passwordArray.filter((item) => item.id !== id)
+      setPasswordArray(newPassword);
+      localStorage.setItem("passwords", JSON.stringify(passwordArray.filter(item => item.id !== id)));
+  }
+
+  const editPassword = (id) => {
+    
+  }
+
+  
+
+
+  const copyText = (text) => {
+    navigator.clipboard.writeText(text);
+  }
 
 
 
 
 
   return (
-    <div className='h-[80vh] flex justify-center items-center  bg-white'>
-      <div className="container w-3/5 rounded-3xl p-5 bg-blue-200 flex flex-col ">
+    <div className='h-[80vh] flex justify-center items-center bg-white'>
+      <div className="container w-[75vw] rounded-3xl p-5 bg-blue-200 flex flex-col ">
 
         <div className="logo text-2xl font-bold text-center ">
           <span className='text-green-500'> &lt;</span>
@@ -53,14 +74,14 @@ const Manager = () => {
         </div>
 
         <div className="inputs my-5 mx-2 flex flex-col">
-          <input name = "site" value = {form.site} onChange={handleChange} className='bg-white px-3 rounded-3xl' type="text " placeholder='Enter Website URL' />
-          <div className="usernamepass my-5 flex gap-5 ">   
-            <input name = "username" value = {form.username} onChange={handleChange} className='bg-white px-3 rounded-3xl w-full' type="text" placeholder='Enter Username' />
+          <input name="site" value={form.site} onChange={handleChange} className='bg-white px-3 rounded-3xl' type="text " placeholder='Enter Website URL' />
+          <div className="usernamepass my-5 flex gap-5 ">
+            <input name="username" value={form.username} onChange={handleChange} className='bg-white px-3 rounded-3xl w-full' type="text" placeholder='Enter Username' />
             <div className="show relative">
-             <input name = "password" value = {form.password} onChange={handleChange} className='bg-white px-3 rounded-3xl' type="text" placeholder='Enter Password' />
-             <span className='absolute right-2 cursor-pointer'> 
-              <img ref={ref} onClick={showPassword} className='p-1' width={26} src="icons/eye.png" alt="eye" />
-             </span>
+              <input name="password" value={form.password} onChange={handleChange} className='bg-white px-3 rounded-3xl' type="text" placeholder='Enter Password' />
+              <span className='absolute right-2 cursor-pointer'>
+                <img ref={ref} onClick={showPassword} className='p-1' width={26} src="icons/eye.png" alt="eye" />
+              </span>
             </div>
           </div>
         </div>
@@ -71,6 +92,83 @@ const Manager = () => {
               src="https://cdn.lordicon.com/jgnvfzqg.json"
               trigger="hover" >
             </lord-icon>Save</button>
+        </div>
+
+
+        <div className="passwords">
+          <h2 className='font-bold text-xl text-center py-2'>Your Passwords</h2>
+          <table className='w-full rounded-2xl  bg-blue-300 text-center overflow-hidden'>
+            <thead>
+              <tr className='bg-blue-400'>
+                <th className='px-2 py-1'>Site</th>
+                <th className='px-2 py-1'>Username</th>
+                <th className='px-2 py-1'>Password</th>
+                <th className='px-2 py-1'>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {passwordArray.length === 0 && <tr><td colSpan={4} className='text-center p-3'>No passwords found</td></tr>}
+              {passwordArray.map((item, index) => {
+                return (
+                  <tr key={index} >
+                    <td className='px-2 py-1 border border-blue-200 '>
+                      <div className='flex justify-center items-center'>
+                        <a href={item.site} target="blank">{item.site}</a>
+                        <div className='copy' onClick={() => copyText(item.site)}>
+                        <lord-icon
+                          style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                          src="https://cdn.lordicon.com/iykgtsbt.json"
+                          trigger="hover" >
+                        </lord-icon>
+                        </div>
+                      </div>
+                    </td>
+                    <td className='px-2 py-1 border border-blue-200 '>
+                      <div className='flex justify-center items-center'>
+                        {item.username}
+                        <div className='copy' onClick={() => copyText(item.username)}>
+                        <lord-icon
+                          style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                          src="https://cdn.lordicon.com/iykgtsbt.json"
+                          trigger="hover" >
+                        </lord-icon>
+                        </div>
+                      </div>
+                    </td>
+                    <td className='px-2 py-1 border border-blue-200 '>
+                      <div className='flex justify-center items-center'>
+                        {item.password}
+                        <div className='copy' onClick={() => copyText(item.password)}>
+                        <lord-icon
+                          style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                          src="https://cdn.lordicon.com/iykgtsbt.json"
+                          trigger="hover" >
+                        </lord-icon>
+                        </div>
+                      </div>
+                    </td>
+                    <td className='px-2 py-1 border border-blue-200 '>
+                      <span onClick={()=> editPassword(item.id)} className=' edit mx-1 cursor-pointer'>
+                        <lord-icon
+                          src="https://cdn.lordicon.com/gwlusjdu.json"
+                          trigger="hover"
+                          style={{ "width": "25px", "height": "25px" }}>
+                        </lord-icon>
+                      </span>
+                      <span onClick={() => deletePassword(item.id)} className='delete mx-1 cursor-pointer'> <lord-icon
+                        src="https://cdn.lordicon.com/skkahier.json"
+                        trigger="hover"
+                        style={{ "width": "25px", "height": "25px" }}>
+                      </lord-icon>
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+
+
         </div>
 
 
